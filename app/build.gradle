@@ -16,6 +16,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        renderscriptTargetApi 23
+        renderscriptSupportModeEnabled true
+
         vectorDrawables {
             useSupportLibrary true
         }
@@ -89,4 +93,5 @@ dependencies {
 
     //Permissions
     implementation "com.google.accompanist:accompanist-permissions:0.24.3-alpha"
+
 }

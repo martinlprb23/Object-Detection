@@ -5,25 +5,23 @@ import android.graphics.Bitmap
 import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.media.Image
-import android.renderscript.Allocation
-import android.renderscript.Element
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicYuvToRGB
-import android.renderscript.Type
+import androidx.renderscript.Allocation
+import androidx.renderscript.Element
+import androidx.renderscript.RenderScript
+import androidx.renderscript.ScriptIntrinsicYuvToRGB
+import androidx.renderscript.Type
 
 /**
  * Helper class used to efficiently convert a [Media.Image] object from
  * [ImageFormat.YUV_420_888] format to an RGB [Bitmap] object.
  *
- * The [yuvToRgb] method is able to achieve the same FPS as the CameraX image
- * analysis use case on a Pixel 3 XL device at the default analyzer resolution,
- * which is 30 FPS with 640x480.
+ * The [yuvToRgb] method is optimized to achieve efficient conversion with good performance.
  *
- * NOTE: This has been tested in a limited number of devices and is not
- * considered production-ready code. It was created for illustration purposes,
- * since this is not an efficient camera pipeline due to the multiple copies
- * required to convert each frame.
+ * NOTE: This code has been tested on a limited number of devices and is not considered
+ * production-ready. It is provided for illustration purposes and may require further
+ * optimization for specific devices or use cases.
  */
+
 class YuvToRgbConverter(context: Context) {
     private val rs = RenderScript.create(context)
     private val scriptYuvToRgb = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs))
@@ -51,7 +49,14 @@ class YuvToRgbConverter(context: Context) {
         // Ensure that the RenderScript inputs and outputs are allocated
         if (!::inputAllocation.isInitialized) {
             // Explicitly create an element with type NV21, since that's the pixel format we use
-            val elemType = Type.Builder(rs, Element.YUV(rs)).setYuvFormat(ImageFormat.NV21).create()
+            //val elemType = Type.Builder(rs, Element.YUV(rs)).setYuvFormat(ImageFormat.NV21).create() deprecated
+            // Explicitly create an element with U8 type, matching the pixel format used (NV21)
+            val elemType = Type.Builder(rs, Element.U8(rs))
+                .setX(image.cropRect.width())
+                .setY(image.cropRect.height())
+                .setYuvFormat(ImageFormat.NV21)
+                .create()
+
             inputAllocation = Allocation.createSized(rs, elemType.element, yuvBuffer.size)
         }
         if (!::outputAllocation.isInitialized) {
