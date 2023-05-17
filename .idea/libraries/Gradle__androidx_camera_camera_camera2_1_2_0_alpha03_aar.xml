@@ -4,9 +4,9 @@
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/61aa3c3d952925e8eec74132840a4387/transformed/camera-camera2-1.2.0-alpha03/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/61aa3c3d952925e8eec74132840a4387/transformed/camera-camera2-1.2.0-alpha03/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/61aa3c3d952925e8eec74132840a4387/transformed/camera-camera2-1.2.0-alpha03/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/61aa3c3d952925e8eec74132840a4387/transformed/camera-camera2-1.2.0-alpha03/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/61aa3c3d952925e8eec74132840a4387/transformed/camera-camera2-1.2.0-alpha03/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/61aa3c3d952925e8eec74132840a4387/transformed/camera-camera2-1.2.0-alpha03/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -1,10 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.accompanist:accompanist-permissions:0.24.3-alpha@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8f26a0c8fee2799d5b73af9c2c9ae465/transformed/accompanist-permissions-0.24.3-alpha/res" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/ab9a164ff351f2323b81161315cb2ab5/transformed/accompanist-permissions-0.24.3-alpha/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/ab9a164ff351f2323b81161315cb2ab5/transformed/accompanist-permissions-0.24.3-alpha/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/ab9a164ff351f2323b81161315cb2ab5/transformed/accompanist-permissions-0.24.3-alpha/res" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-permissions/0.24.3-alpha/b21a87aff9cd5d0eb495a85500df2d874f90cec1/accompanist-permissions-0.24.3-alpha-javadoc.jar!/" />

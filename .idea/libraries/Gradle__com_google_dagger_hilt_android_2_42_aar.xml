@@ -2,7 +2,6 @@
   <library name="Gradle: com.google.dagger:hilt-android:2.42@aar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/c3211306451e96934039587d994c3573/transformed/hilt-android-2.42/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c3211306451e96934039587d994c3573/transformed/hilt-android-2.42/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c3211306451e96934039587d994c3573/transformed/hilt-android-2.42/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
