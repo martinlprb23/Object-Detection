@@ -27,14 +27,12 @@ If you want to use your own object detection model, follow these steps:
 
 1. Place your TensorFlow Lite model file and dataset_labels.txt in the `app/src/main/ml` folder.
 2. Modify the code in the `MainActivity` class to load your custom model. For example:
+    ```kotlin
+        companion object {
+            private const val MODEL_FILE_NAME = "ssd_mobilenet_v1_1_metadata_1.tflite"
+            private const val LABEL_FILE_NAME = "coco_dataset_labels_v1.txt"}
 
-```kotlin
-companion object {
-    private const val MODEL_FILE_NAME = "ssd_mobilenet_v1_1_metadata_1.tflite"
-    private const val LABEL_FILE_NAME = "coco_dataset_labels_v1.txt"
-}
-
-For newer TensorFlow models, modify the ObjectDetector class. For example:
+3. For newer TensorFlow models, modify the ObjectDetector class. For example:
 private val outputMap = mapOf(
     0 to outputScores,
     1 to outputBoundingBoxes,
