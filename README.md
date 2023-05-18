@@ -5,7 +5,7 @@ This is a sample application that uses Jetpack Compose, TensorFlow Lite, and the
 ## Preview
 
 
-| <img src="/preview/preview1.jpg" alt="Imagen de un móvil" width="300px" /> | <img src="/preview/preview2.jpg" alt="Imagen de un móvil" width="300px" /> |
+| <img src="/preview/preview2.jpg" alt="Imagen de un móvil" width="300px" /> | <img src="/preview/preview2.jpg" alt="Imagen de un móvil" width="300px" /> |
 | --- | --- |
 |  IMG 1 | IMG 2 |
 
@@ -40,12 +40,12 @@ If you want to use your own object detection model, follow these steps:
             private const val LABEL_FILE_NAME = "coco_dataset_labels_v1.txt"}
 
 3. For newer TensorFlow models, modify the ObjectDetector class. For example:
-private val outputMap = mapOf(
-    0 to outputScores,
-    1 to outputBoundingBoxes,
-    2 to outputDetectionNum,
-    3 to outputLabels
-)
+    ```kotlin
+        private val outputMap = mapOf(
+        0 to outputScores,
+        1 to outputBoundingBoxes,
+        2 to outputDetectionNum,
+        3 to outputLabels)
 
 ## Known Issues
 
