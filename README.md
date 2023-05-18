@@ -5,7 +5,7 @@ This is a sample application that uses Jetpack Compose, TensorFlow Lite, and the
 ## Preview
 
 
-| <img src="/preview/preview2.jpg" alt="Imagen de un móvil" width="300px" /> | <img src="/preview/preview2.jpg" alt="Imagen de un móvil" width="300px" /> |
+| <img src="/preview/previewimg.jpg" alt="Imagen de un móvil" width="300px" /> | <img src="/preview/preview2.jpg" alt="Imagen de un móvil" width="300px" /> |
 | --- | --- |
 |  IMG 1 | IMG 2 |
 
