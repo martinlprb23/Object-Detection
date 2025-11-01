@@ -1,4 +1,4 @@
-package com.roblescode.detection.data
+package com.roblescode.detection.data.models
 
 import android.graphics.RectF
 

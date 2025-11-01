@@ -7,7 +7,11 @@ import android.media.Image
 import android.util.Size
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.roblescode.detection.data.DetectionObject
+import androidx.core.graphics.createBitmap
+import com.roblescode.detection.data.models.DetectionObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.ops.NormalizeOp
@@ -27,115 +31,102 @@ class ObjectDetector(
 ) : ImageAnalysis.Analyzer {
 
     companion object {
-        // Tamaño de entrada y salida del modelo
-        private const val IMG_SIZE_X = 300 //300
-        private const val IMG_SIZE_Y = 300 //300
-        private const val MAX_DETECTION_NUM = 10//10
-
-        // Dado que el modelo tflite utilizado esta vez ha sido cuantificado, la normalización relacionada no es 127.5f sino la siguiente
-        private const val NORMALIZE_MEAN = 0f//0f
-        private const val NORMALIZE_STD = 1f//1f
-
-        // Umbral de puntuación de resultado de detección
+        private const val IMG_SIZE_X = 300
+        private const val IMG_SIZE_Y = 300
+        private const val MAX_DETECTION_NUM = 10
+        private const val NORMALIZE_MEAN = 0f
+        private const val NORMALIZE_STD = 1f
         private const val SCORE_THRESHOLD = 0.6f
     }
 
     private var imageRotationDegrees: Int = 0
-    private val tfImageProcessor by lazy {
-        ImageProcessor.Builder()
-            .add(ResizeOp(IMG_SIZE_X, IMG_SIZE_Y, ResizeOp.ResizeMethod.BILINEAR)) // Cambiar el tamaño de la imagen para que se ajuste a la entrada del modelo
-            .add(Rot90Op(-imageRotationDegrees / 90)) // El proxy de imagen que fluye se gira 90 grados
-            .add(NormalizeOp(NORMALIZE_MEAN, NORMALIZE_STD)) // Relacionado con la normalización
-            .build()
-    }
-
+    private var reusableBitmap: Bitmap? = null
     private val tfImageBuffer = TensorImage(DataType.UINT8)
-    //private val tfImageBuffer = TensorImage(DataType.FLOAT32)
 
-    // Cuadro delimitador de resultado de detección [1:10:4]
-    // El cuadro delimitador tiene la forma de [arriba, izquierda, abajo, derecha]
-    private val outputBoundingBoxes: Array<Array<FloatArray>> = arrayOf(
-        Array(MAX_DETECTION_NUM) {
-            FloatArray(4) //4
-        }
-    )
+    // Preprocessor cached unless rotation changes
+    private var lastRotation = -1
+    private var tfImageProcessor: ImageProcessor? = null
 
-    // Índice de etiqueta de clase de resultado de detección [1:10]
-    private val outputLabels: Array<FloatArray> = arrayOf(
-        FloatArray(MAX_DETECTION_NUM)
-    )
-
-    // Cada puntuación del resultado de detección [1:10]
-    private val outputScores: Array<FloatArray> = arrayOf(
-        FloatArray(MAX_DETECTION_NUM)
-    )
-
-    // Número de objetos detectados (10 (constante) porque esta vez se configuró en el momento de la conversión de tflite)
-    private val outputDetectionNum: FloatArray = FloatArray(1)
-
-    // Juntar en un mapa para recibir resultados de detección
-    private val outputMap = mapOf(
-        0 to outputBoundingBoxes,
-        1 to outputLabels,
-        2 to outputScores,
-        3 to outputDetectionNum
+    // Preallocated output buffers
+    private val outputBoundingBoxes = arrayOf(Array(MAX_DETECTION_NUM) { FloatArray(4) })
+    private val outputLabels = arrayOf(FloatArray(MAX_DETECTION_NUM))
+    private val outputScores = arrayOf(FloatArray(MAX_DETECTION_NUM))
+    private val outputDetectionNum = FloatArray(1)
 
     //Change for new models version TensorFlow
     //0 to outputScores,
     //1 to outputBoundingBoxes,
     //2 to outputDetectionNum,
     //3 to outputLabels
+    private val outputMap = mapOf(
+        0 to outputBoundingBoxes,
+        1 to outputLabels,
+        2 to outputScores,
+        3 to outputDetectionNum
     )
 
-    // Infiera la imagen de vista previa que fluye desde cameraX colocándola en el modelo de detección de objetos.
-    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
+    private val backgroundScope = CoroutineScope(Dispatchers.Default)
+
+    @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(image: ImageProxy) {
-        if (image.image == null) return
+        val mediaImage = image.image ?: return
         imageRotationDegrees = image.imageInfo.rotationDegrees
-        val detectedObjectList = detect(image.image!!)
-        listener(detectedObjectList)
-        image.close()
+
+        // Process on background thread
+        backgroundScope.launch {
+            val detections = detect(mediaImage)
+            listener(detections)
+            image.close()
+        }
     }
 
-    // Convierta la imagen a YUV-> mapa de bits RGB-> tensorflowImage-> tensorflowBuffer,
-    // infiera y envíe el resultado como una lista
-
     private fun detect(targetImage: Image): List<DetectionObject> {
-        val targetBitmap = Bitmap.createBitmap(targetImage.width, targetImage.height, Bitmap.Config.ARGB_8888)
-        yuvToRgbConverter.yuvToRgb(targetImage, targetBitmap) // conversion a rgb
-        tfImageBuffer.load(targetBitmap)
-        val tensorImage = tfImageProcessor.process(tfImageBuffer)
+        // Reuse bitmap if size matches, otherwise recreate
+        val bitmap = reusableBitmap?.takeIf {
+            it.width == targetImage.width && it.height == targetImage.height
+        } ?: createBitmap(targetImage.width, targetImage.height).also {
+            reusableBitmap = it
+        }
 
-        //tflite Realización de inferencias en el modelo
+        yuvToRgbConverter.yuvToRgb(targetImage, bitmap)
+
+        // Rebuild processor only if rotation changed
+        if (tfImageProcessor == null || lastRotation != imageRotationDegrees) {
+            tfImageProcessor = ImageProcessor.Builder()
+                .add(ResizeOp(IMG_SIZE_X, IMG_SIZE_Y, ResizeOp.ResizeMethod.BILINEAR))
+                .add(Rot90Op(-imageRotationDegrees / 90))
+                .add(NormalizeOp(NORMALIZE_MEAN, NORMALIZE_STD))
+                .build()
+            lastRotation = imageRotationDegrees
+        }
+
+        tfImageBuffer.load(bitmap)
+        val tensorImage = tfImageProcessor!!.process(tfImageBuffer)
+
+        // Inference
         interpreter.runForMultipleInputsOutputs(arrayOf(tensorImage.buffer), outputMap)
 
-        // Dar formato al resultado de la inferencia y devolverlo como una lista
-        val detectedObjectList = arrayListOf<DetectionObject>()
-        loop@ for (i in 0 until outputDetectionNum[0].toInt()) {
+        // Parse results
+        val results = mutableListOf<DetectionObject>()
+        val detectionCount = outputDetectionNum[0].toInt().coerceAtMost(MAX_DETECTION_NUM)
+
+        for (i in 0 until detectionCount) {
             val score = outputScores[0][i]
-            val label = labels[outputLabels[0][i].toInt()]
-            val boundingBox = RectF(
-                outputBoundingBoxes[0][i][1] * resultViewSize.width,
-                outputBoundingBoxes[0][i][0] * resultViewSize.height,
-                outputBoundingBoxes[0][i][3] * resultViewSize.width,
-                outputBoundingBoxes[0][i][2] * resultViewSize.height
+            if (score < SCORE_THRESHOLD) break
+
+            val labelIndex = outputLabels[0][i].toInt().coerceIn(labels.indices)
+            val label = labels[labelIndex]
+            val box = outputBoundingBoxes[0][i]
+            val rect = RectF(
+                box[1] * resultViewSize.width,
+                box[0] * resultViewSize.height,
+                box[3] * resultViewSize.width,
+                box[2] * resultViewSize.height
             )
 
-            // Agregua solo aquellos que son más grandes que el umbral
-            if (score >= SCORE_THRESHOLD) {
-                detectedObjectList.add(
-                    DetectionObject(
-                        score = score,
-                        label = label,
-                        boundingBox = boundingBox
-                    )
-                )
-            } else {
-                    // Los resultados de la detección se clasifican en orden descendente de puntuación,
-                    // por lo que si se supera el umbral, el bucle finaliza.
-                break@loop
-            }
+            results.add(DetectionObject(score, label, rect))
         }
-        return detectedObjectList.take(4)
+
+        return results.take(4)
     }
 }
