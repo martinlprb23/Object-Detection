@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Object_Detection.iml" filepath="$PROJECT_DIR$/.idea/modules/Object_Detection.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Object_Detection.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Object_Detection.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Object_Detection.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Object_Detection.app.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Object_Detection.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Object_Detection.app.main.iml" />
