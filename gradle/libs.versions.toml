@@ -9,7 +9,6 @@ lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
 composeBom = "2025.10.00"
 
-# di
 hilt = "2.55"
 hiltCompiler = "2.55"
 hiltNavigation = "1.2.0"
@@ -17,7 +16,8 @@ ksp = "2.1.10-1.0.31"
 accompanistPermissions = "0.37.3"
 cameraX = "1.5.1"
 navigationCompose = "2.9.5"
-
+materialIcons = "1.7.8"
+tensorflowLiteSupport = "0.5.0"
 
 
 [libraries]
@@ -48,6 +48,8 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraX" }
 androidx-camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "cameraX" }
 androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraX" }
+icons-extended = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIcons" }
+tensorflow-lite-support = { module = "org.tensorflow:tensorflow-lite-support", version.ref = "tensorflowLiteSupport" }
 
 
 [plugins]

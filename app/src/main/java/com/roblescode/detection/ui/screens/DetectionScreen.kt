@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +26,8 @@ import com.roblescode.detection.data.utils.Response
 import com.roblescode.detection.ui.components.CameraPermissionWrapper
 import com.roblescode.detection.ui.components.CameraPreview
 import com.roblescode.detection.ui.components.DrawBoxes
+import com.roblescode.detection.ui.components.FloatingButton
+import com.roblescode.detection.ui.components.ParametersSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,11 +36,18 @@ fun ObjDetectionScreen(modifier: Modifier = Modifier, viewModel: DetectionViewMo
 
     val paint = Paint()
     val pathColorList = listOf(Color.Green, Color.Cyan, Color.Red, Color.Yellow)
+    val showProperties = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { viewModel.initialize() }
 
     Scaffold(
-        contentWindowInsets = WindowInsets.ime
+        contentWindowInsets = WindowInsets.ime,
+        floatingActionButton = {
+            FloatingButton(
+                modifier = Modifier.navigationBarsPadding(),
+                onClick = { showProperties.value = !showProperties.value }
+            )
+        },
     ) { innerPadding ->
         CameraPermissionWrapper(
             modifier = modifier
@@ -72,5 +84,13 @@ fun ObjDetectionScreen(modifier: Modifier = Modifier, viewModel: DetectionViewMo
                 }
             }
         }
+    }
+
+    if (showProperties.value) {
+        ParametersSheet(
+            params = viewModel.parameters.collectAsState().value,
+            onParamsChange = viewModel::updateParams,
+            onDismiss = { showProperties.value = false },
+        )
     }
 }

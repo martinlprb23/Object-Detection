@@ -9,6 +9,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.core.graphics.createBitmap
 import com.roblescode.detection.data.models.DetectionObject
+import com.roblescode.detection.data.models.DetectionParameters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +28,7 @@ class ObjectDetector(
     private val interpreter: Interpreter,
     private val labels: List<String>,
     private val resultViewSize: Size,
-    private val listener: ObjectDetectorCallback
+    private val listener: ObjectDetectorCallback,
 ) : ImageAnalysis.Analyzer {
 
     companion object {
@@ -36,7 +37,6 @@ class ObjectDetector(
         private const val MAX_DETECTION_NUM = 10
         private const val NORMALIZE_MEAN = 0f
         private const val NORMALIZE_STD = 1f
-        private const val SCORE_THRESHOLD = 0.6f
     }
 
     private var imageRotationDegrees: Int = 0
@@ -66,6 +66,12 @@ class ObjectDetector(
     )
 
     private val backgroundScope = CoroutineScope(Dispatchers.Default)
+
+    private var params = DetectionParameters()
+    fun updateParams(params: DetectionParameters) {
+        this.params = params
+    }
+
 
     @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(image: ImageProxy) {
@@ -112,7 +118,7 @@ class ObjectDetector(
 
         for (i in 0 until detectionCount) {
             val score = outputScores[0][i]
-            if (score < SCORE_THRESHOLD) break
+            if (score < params.scoreThreshold) continue
 
             val labelIndex = outputLabels[0][i].toInt().coerceIn(labels.indices)
             val label = labels[labelIndex]

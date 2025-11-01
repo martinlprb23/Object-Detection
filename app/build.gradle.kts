@@ -89,107 +89,12 @@ dependencies {
     implementation(libs.androidx.camera.video)
     implementation(libs.androidx.camera.extensions)
 
+    // Navigation
     implementation(libs.navigation)
 
     // Tensorflow
-    implementation("org.tensorflow:tensorflow-lite-support:0.5.0")
+    implementation(libs.tensorflow.lite.support)
+
+    // Icons
+    implementation(libs.icons.extended)
 }
-
-
-/*plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
-}
-
-android {
-    compileSdk 32
-
-    defaultConfig {
-        applicationId "com.mlr_apps.objectdetection"
-        minSdk 23
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        renderscriptTargetApi 23
-        renderscriptSupportModeEnabled true
-
-        vectorDrawables {
-            useSupportLibrary true
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-    buildFeatures {
-        compose true
-        mlModelBinding true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion compose_version
-    }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
-    }
-    aaptOptions {
-        noCompress "tflite"
-    }
-}
-
-dependencies {
-
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation "androidx.compose.ui:ui:1.3.0-alpha01"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
-    implementation 'androidx.activity:activity-compose:1.5.0'
-    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
-    implementation 'androidx.navigation:navigation-runtime-ktx:2.5.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
-
-
-    //HILT dependency injection
-    implementation 'com.google.dagger:hilt-android:2.42'
-    kapt 'com.google.dagger:hilt-compiler:2.42'
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
-
-    //TENSORFLOW lite
-    implementation 'org.tensorflow:tensorflow-lite-support:0.3.0'
-
-    // CameraX
-    implementation "androidx.camera:camera-core:${camerax_version}"
-    implementation "androidx.camera:camera-camera2:$camerax_version"
-    implementation "androidx.camera:camera-lifecycle:$camerax_version"
-    implementation "androidx.camera:camera-view:$camerax_version"
-
-    //System
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
-    implementation "com.google.accompanist:accompanist-permissions:0.19.0"
-
-    //Permissions
-    implementation "com.google.accompanist:accompanist-permissions:0.24.3-alpha"
-
-}*/

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.roblescode.detection.core.ObjectDetector
 import com.roblescode.detection.core.YuvToRgbConverter
 import com.roblescode.detection.data.models.DetectionObject
+import com.roblescode.detection.data.models.DetectionParameters
 import com.roblescode.detection.data.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,10 +36,16 @@ class DetectionViewModel @Inject constructor(
 
     lateinit var interpreter: Interpreter
     lateinit var yuvToRgbConverter: YuvToRgbConverter
+    private var objectDetector: ObjectDetector? = null
+
     var labels: List<String> = emptyList()
 
     private val state = MutableStateFlow<Response<Unit>>((Response.Loading))
     val initialState = state.asStateFlow()
+
+    private val params = MutableStateFlow(DetectionParameters())
+    val parameters = params.asStateFlow()
+
 
     var detectionList = mutableStateOf<List<DetectionObject>>(listOf())
 
@@ -84,15 +91,20 @@ class DetectionViewModel @Inject constructor(
     }
 
     fun buildAnalyzer(sizeWith: Float, sizeHeight: Float): ObjectDetector {
-        return ObjectDetector(
+        objectDetector = ObjectDetector(
             yuvToRgbConverter = yuvToRgbConverter,
             interpreter = interpreter,
             labels = labels,
             resultViewSize = Size(sizeWith.toInt(), sizeHeight.toInt()),
             listener = ::setList,
         )
+        return objectDetector!!
     }
 
+    fun updateParams(params: DetectionParameters) {
+        this.params.value = params
+        objectDetector?.updateParams(params)
+    }
 
     fun setList(detectedObjectList: List<DetectionObject>) {
         if (detectedObjectList.isEmpty()) return
