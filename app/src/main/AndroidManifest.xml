@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.mlr_apps.objectdetection">
+    package="com.roblescode.detection">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name=".DetectionAplication"
+        android:name="com.roblescode.detection.DetectionApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,9 +20,8 @@
         android:theme="@style/Theme.ObjectDetection"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.roblescode.detection.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.ObjectDetection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
